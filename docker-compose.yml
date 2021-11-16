@@ -1,0 +1,50 @@
+version: "3"
+services:
+  nis-client:
+    # user: "${USERID}:${GROUPID}"
+    container_name: nis-client
+    build:
+      context: ./docker/nis-client
+      args:
+        - VERSION=0.6.99
+        - BASE_URL=https://bob.nem.ninja
+        - NODE_URL=http://hugealice.nem.ninja:7890
+    ports:
+      - "7778:7778"
+      - "7890:7890"
+    restart: "on-failure:2"
+    stop_signal: SIGINT
+    volumes:
+      - ./data/nem:/root/nem:rw
+  servant:
+    # user: "${USERID}:${GROUPID}"
+    container_name: servant
+    build:
+      context: ./docker/servant
+      args:
+        - VERSION=0_0_4
+        - BASE_URL=https://bob.nem.ninja
+    ports:
+      - "7880:7880"
+    restart: "on-failure:2"
+    stop_signal: SIGKILL
+    volumes:
+      - ./data/servant/config.properties:/app/servant/config.properties:ro
+    depends_on:
+      - nis
+  https-portal:
+    # user: "${USERID}:${GROUPID}"
+    container_name: https-portal
+    image: steveltn/https-portal:1
+    ports:
+      - "80:80"
+      - "7891:443"
+    restart: always
+    environment:
+      WEBSOCKET: "true"
+      DOMAINS: "localhost -> http://node:7890"
+      STAGE: local
+    volumes:
+      - ./data/ssl-certs:/var/lib/https-portal:rw
+    depends_on:
+      - nis
