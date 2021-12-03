@@ -6,6 +6,7 @@ WORKDIR /_work
 
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y \
   curl jq
+
 RUN if [ "$VERSION" = "" ]; then \
     VERSION=$(curl -Ls ${BASE_URL}/version.txt) \
   ; fi \
@@ -14,14 +15,15 @@ RUN if [ "$VERSION" = "" ]; then \
   && SHA=$(curl -Ls ${NODE_URL}/transaction/get?hash=${HASH} | jq -r '.transaction.message.payload[10:74]') \
   && echo "${SHA} nis-${VERSION}.tgz" > checksum-${VERSION} \
   && sha256sum -c checksum-${VERSION} \
-  && mkdir -p /app/nis && tar zxf nis-${VERSION}.tgz -C /app/nis --strip-components 1
+  && mkdir -p /app/nis-client \
+  && tar zxf nis-${VERSION}.tgz -C /app/nis-client --strip-components 1 \
+  && sed -i.bak 's/nem.folder = %h\/nem/nem.folder = \/app\/nis-client\/data/' /app/nis-client/nis/config.properties
 
-FROM openjdk:11-jre-slim-buster
-# FROM gcr.io/distroless/base
+# FROM openjdk:11-jre-slim-buster
+FROM gcr.io/distroless/java:11
 COPY --from=builder /app/ /app/
-WORKDIR /app/nis/nis
+WORKDIR /app/nis-client/nis
 EXPOSE 7778
 EXPOSE 7890
-# ENTRYPOINT [ "/app/jre/bin/java" ]
-ENTRYPOINT [ "java" ]
-CMD [ "-Xms4G", "-Xmx6G", "-cp", ".:./*:../libs/*", "org.nem.deploy.CommonStarter" ]
+ENTRYPOINT [ "java", "-cp", ".:./*:../libs/*", "org.nem.deploy.CommonStarter" ]
+CMD [ "-Xms4G", "-Xmx6G" ]

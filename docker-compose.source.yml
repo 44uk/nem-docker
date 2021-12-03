@@ -2,9 +2,9 @@ version: "3"
 services:
   nis-client:
     # user: "${USERID}:${GROUPID}"
-    container_name: nis-client
+    container_name: nis-client-from-source
     build:
-      context: ./docker/nis-client
+      context: ./docker/nis-client-from-source
       args:
         - VERSION=0.6.100
     ports:

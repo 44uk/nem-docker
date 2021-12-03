@@ -13,5 +13,5 @@ FROM openjdk:11-jre-slim-buster
 COPY --from=builder /app/ /app/
 WORKDIR /app/servant
 EXPOSE 7880
-ENTRYPOINT [ "java" ]
-CMD [ "-Xms256M", "-Xmx256M", "-cp", ".:jars/*", "org.nem.rewards.servant.NodeRewardsServant" ]
+ENTRYPOINT [ "java", "-cp", ".:jars/*", "org.nem.rewards.servant.NodeRewardsServant" ]
+CMD [ "-Xms256M", "-Xmx256M" ]
