@@ -1,7 +1,7 @@
 version: "3"
 services:
   nis-client:
-    # user: "${USERID}:${GROUPID}"
+    user: "${USERID}:${GROUPID}"
     container_name: nis-client-from-source
     build:
       context: ./docker/nis-client-from-source
