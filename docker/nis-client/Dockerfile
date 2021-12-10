@@ -1,7 +1,7 @@
 FROM openjdk:11-jre-slim-buster AS builder
 ARG VERSION=""
 ARG BASE_URL=https://bob.nem.ninja
-ARG NODE_URL=http://hugealice.nem.ninja:7890
+ARG NODE_URL=http://superalice.nemmain.net:7890
 WORKDIR /_work
 
 RUN apt-get update -y && apt-get upgrade -y && apt-get install -y \
