@@ -2,6 +2,12 @@
 # Short server name (will appear as name for the lock file - example: Nis.lock)
 nem.shortServerName = Nis
 
+# In order to be able to start the NEM software (NIS and also NCC) from a removeable media (e.g. USB drive),
+# the path, where the database, logs and other files will be saved, can be configured.
+# %h - is the home directory of the user (also if the entry is missing) (example: nem.folder = %h/nem)
+# . - is the working directory (example: nem.folder = ./nem)
+nem.folder = %h/nem
+
 # Specifies the maximum number of threads of the thread pool - default is: 500
 # NIS runs more than one thread to be responsive to more than one request at a time.
 # The higher this value, the more requests can be answered by NIS at the same time,

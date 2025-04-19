@@ -1,0 +1,62 @@
+services:
+  nis:
+    user: "${USERID:-1000}:${GROUPID:-1000}"
+    container_name: nis
+    build:
+      context: ./docker/nis
+      # args:
+      #   VERSION: "0.6.102"
+    ports:
+      - "7778:7778"
+      - "7890:7890"
+    restart: unless-stopped
+    stop_signal: SIGINT
+    volumes:
+      - ./data:/data/nem:rw
+      # - ./config/nis/config-user.properties:/app/nem/nis/config-user.properties:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7890/heartbeat"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  servant:
+    user: "${USERID:-1000}:${GROUPID:-1000}"
+    container_name: servant
+    build:
+      context: ./docker/servant
+      # args:
+      #   - VERSION=0_0_4
+      #   - BASE_URL=https://bob.nem.ninja
+    ports:
+      - "7880:7880"
+    restart: unless-stopped
+    stop_signal: SIGKILL
+    volumes:
+      - ./config/servant/config.properties:/app/servant/config.properties:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7880/nr/metaData"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      - nis
+  https-portal:
+    user: "${USERID:-1000}:${GROUPID:-1000}"
+    container_name: https-portal
+    image: steveltn/https-portal:1
+    ports:
+      - "80:80"
+      - "7891:443"
+    restart: unless-stopped
+    environment:
+      CLIENT_MAX_BODY_SIZE: 5M
+      WEBSOCKET: "true"
+      DOMAINS: "localhost -> http://nis:7890"
+      STAGE: local
+    volumes:
+      - ./data/ssl-certs:/var/lib/https-portal:rw
+    depends_on:
+      - nis
+      - servant
