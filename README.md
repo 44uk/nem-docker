@@ -37,7 +37,7 @@ The path is set `/data/nem` by default for docker container environment.
 $ docker compose -f compose.yml up
 
 # Docker for Linux (run current user)
-$ USERID=$(id -u) GROUPID=$(id -g) docker -f compose.yml compose up
+$ USERID=$(id -u) GROUPID=$(id -g) docker compose -f compose.yml up
 ```
 
 - [http://localhost:7890](http://localhost:7890)
