@@ -19,7 +19,16 @@ $ docker compose -f compose.yml build
 You can put user configuration file. Write your lines what you want to overwrite.
 
 **Please don't overwrite `nem.folder` property.**
+
 The path is set `/data/nem` by default for docker container environment.
+
+Before you start containers by compose, enable this line in `compose.yml`.
+
+```yml
+    volumes:
+      - ./config/nis/config-user.properties:/app/nem/nis/config-user.properties:ro
+```
+
 
 ### Data
 
